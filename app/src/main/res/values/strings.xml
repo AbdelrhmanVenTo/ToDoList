@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">TodoApp</string>
+    <string name="title_activity_todo_list">TodoListActivity</string>
+    <string name="success">success</string>
+    <string name="todo_added_successfully">Todo added Successfully</string>
+    <string name="ok">ok</string>
+    <string name="title">title</string>
+    <string name="content">content</string>
+    <string name="date">date</string>
+    <string name="add">add</string>
+    <string name="update">Update</string>
+    <string name="todo_update_successfully">ToDo Update Successfully</string>
+    <string name="channel_name">Todo App</string>
+    <string name="channel_description">shows notifcaitons for your daily todo</string>
+</resources>
