@@ -1,5 +1,8 @@
 package com.example.administrator.todoapp;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -7,6 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -14,11 +19,13 @@ import com.example.administrator.todoapp.Base.BaseActivity;
 import com.example.administrator.todoapp.DataBase.Model.Todo;
 import com.example.administrator.todoapp.DataBase.TodoDataBase;
 
+import java.util.Calendar;
+
 public class UpdateTodoListActivity extends BaseActivity implements View.OnClickListener {
 
     protected EditText title;
     protected EditText content;
-    protected EditText date;
+    protected TextView date;
     protected Button add;
     String sTitle,sContent,sDate;
 
@@ -61,13 +68,53 @@ public class UpdateTodoListActivity extends BaseActivity implements View.OnClick
                         }
                     }).setCancelable(false);
         }
+        else if(view.getId()==R.id.date){
+            Calendar calendar=Calendar.getInstance();
+            int m=calendar.get(Calendar.MINUTE);
+            int h=calendar.get(Calendar.HOUR_OF_DAY);
+            TimePickerDialog dialog=new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+                @Override
+                public void onTimeSet(TimePicker view,
+                                      int hours, int minutes) {
+                    hour=hours;
+                    minute=minutes;
+                    date.setText(hours+":"+minute);
+                }
+            },h,m,false);
+            dialog.show();
         }
+    }
+
+    private void addAlarmForTodo() {
+        Intent alarmIntent= new Intent(activity,TodoAlarmReciever.class);
+        alarmIntent.putExtra("title",title.getText().toString());
+        alarmIntent.putExtra("content",content.getText().toString());
+
+        PendingIntent pendingIntent= PendingIntent.getBroadcast(activity,
+                (int) System.currentTimeMillis(),
+                alarmIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmManager =(AlarmManager)
+                getSystemService(ALARM_SERVICE);
+
+        Calendar calendar= Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY,hour);
+        calendar.set(Calendar.MINUTE,minute);
+
+        alarmManager.set(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),pendingIntent);
+
+
+    }
+
+    int hour,minute;
+
 
 
     private void initView() {
         title =  findViewById(R.id.title);
         content =  findViewById(R.id.content);
         date =  findViewById(R.id.date);
+        date.setOnClickListener(this);
         add =  findViewById(R.id.add);
         add.setOnClickListener(UpdateTodoListActivity.this);
     }
