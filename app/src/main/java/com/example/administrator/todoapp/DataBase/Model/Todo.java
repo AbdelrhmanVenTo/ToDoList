@@ -16,16 +16,29 @@ public class Todo {
     String content;
     @ColumnInfo
     String date;
+    @ColumnInfo
+    String time;
+
 
     public Todo(){
 
     }
 
     @Ignore
-    public Todo(String title, String content, String date) {
+    public Todo(String title, String content, String date ,String time) {
         this.title = title;
         this.content = content;
         this.date = date;
+        this.time = time;
+    }
+
+
+    public Todo(int id, String title, String content, String date, String time) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.date = date;
+        this.time = time;
     }
 
     public int getId() {
@@ -58,5 +71,13 @@ public class Todo {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }

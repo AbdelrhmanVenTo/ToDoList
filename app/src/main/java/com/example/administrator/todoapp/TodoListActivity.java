@@ -18,6 +18,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -59,41 +60,43 @@ public class TodoListActivity extends BaseActivity {
             }
         });
 
-        enableSwipeToDeleteAndUndo();
+
 
         adapter.setOnItemClickListener(new TodoRecyclerViewAdapter.onItemClickListener() {
             @Override
             public void onItemClick(Todo todo) {
                 Intent intent = new Intent(activity,UpdateTodoListActivity.class);
                 intent.putExtra("EXTRA_ID",todo.getId());
-                intent.putExtra("EXTEA_TITLE",todo.getTitle());
-                intent.putExtra("EXTRA_CONTANT",todo.getContent());
+                intent.putExtra("EXTRA_TITLE",todo.getTitle());
+                intent.putExtra("EXTRA_CONTENT",todo.getContent());
                 intent.putExtra("EXTRA_DATA",todo.getDate());
+                intent.putExtra("EXTRA_TIME",todo.getTime());
                 startActivity(intent);
             }
         });
+
+
 
 
     }
 
     private void enableSwipeToDeleteAndUndo() {
         SwipeToDeleteCallback swipeToDeleteCallback = new SwipeToDeleteCallback(activity) {
-            /*List<Todo> allTodos=TodoDataBase.getInstance(activity)
-                    .todoDao()
-                    .getAllTodo();*/
-            @Override
-            public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder, int i) {
-                TodoDataBase.getInstance(activity).todoDao().deleteTodo(adapter.getData(viewHolder.getAdapterPosition()));
-                Toast.makeText(activity,"Todo Deleted",Toast.LENGTH_SHORT);
-                adapter.notifyDataSetChanged();
-                //adapter.changeData(allTodos);
 
+            @Override
+            public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder, final int i) {
+                TodoDataBase.getInstance(activity).todoDao().deleteTodo(adapter.getData(viewHolder.getAdapterPosition()));
+                adapter.deleteItem(viewHolder.getAdapterPosition());
+                Toast.makeText(activity,"Todo Deleted",Toast.LENGTH_SHORT).show();
                 Snackbar snackbar = Snackbar
                         .make(findViewById(android.R.id.content), "Item was removed from the list.", Snackbar.LENGTH_LONG);
                 snackbar.setAction("UNDO", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                       // TodoDataBase.getInstance(activity).todoDao().insertTodo(adapter.getData(viewHolder.getAdapterPosition()));
+                        Log.e("error" , "insert");
+                         adapter.restoreItem(adapter.getData(viewHolder.getAdapterPosition())
+                                 ,viewHolder.getAdapterPosition()-1);
+
                     }
                 });
 
@@ -102,6 +105,8 @@ public class TodoListActivity extends BaseActivity {
 
             }
         };
+
+
 
         ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeToDeleteCallback);
         itemTouchhelper.attachToRecyclerView(recyclerView);
@@ -118,11 +123,18 @@ public class TodoListActivity extends BaseActivity {
                 .getAllTodo();
         adapter.changeData(allTodos);
 
+        getIntent().getStringExtra("EXTRA_ID");
+        getIntent().getStringExtra("EXTRA_TITLE");
+        getIntent().getStringExtra("EXTRA_CONTENT");
+        getIntent().getStringExtra("EXTRA_DATA");
+        getIntent().getStringExtra("EXTRA_TIME");
+
+        enableSwipeToDeleteAndUndo();
+        adapter.notifyDataSetChanged();
 /*
         adapter = new TodoRecyclerViewAdapter(allTodos);
         recyclerView.setAdapter(adapter);
 */
     }
-
 
 }

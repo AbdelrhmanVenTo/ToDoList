@@ -10,7 +10,10 @@
         android:roundIcon="@drawable/to_do_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".UpdateTodoListActivity"></activity>
+        <activity android:name=".UpdateTodoListActivity"
+            android:parentActivityName=".TodoListActivity"
+            android:screenOrientation="fullSensor"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".TodoListActivity"
             android:label="@string/title_activity_todo_list"
@@ -21,7 +24,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AddTodoActivity" />
+        <activity android:name=".AddTodoActivity"
+            android:parentActivityName=".TodoListActivity"
+            android:screenOrientation="fullSensor"
+            android:windowSoftInputMode="adjustResize" />
         <receiver android:name=".TodoAlarmReciever"/>
     </application>
 

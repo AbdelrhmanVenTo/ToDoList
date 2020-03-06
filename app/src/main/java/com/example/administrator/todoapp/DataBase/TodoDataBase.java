@@ -8,7 +8,7 @@ import android.content.Context;
 import com.example.administrator.todoapp.DataBase.Dao.TodoDao;
 import com.example.administrator.todoapp.DataBase.Model.Todo;
 
-@Database(entities = {Todo.class},version = 1,exportSchema = false)
+@Database(entities = {Todo.class},version = 2,exportSchema = false)
 public abstract class TodoDataBase extends RoomDatabase {
     private static TodoDataBase myTodoDataBase;
     private static final String DBName="TodoListDataBase";

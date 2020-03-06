@@ -22,7 +22,7 @@ public class TodoAlarmReciever extends BroadcastReceiver {
                =new NotificationCompat.Builder(context,MyApplication.CHANNEL_ID);
        builder.setContentTitle(title)
                .setContentText(content)
-               .setSmallIcon(R.mipmap.ic_launcher);
+               .setSmallIcon(R.drawable.to_do_icon);
 
        NotificationManager notificationManager
                = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

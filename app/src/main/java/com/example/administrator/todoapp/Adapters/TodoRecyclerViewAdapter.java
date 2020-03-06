@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.administrator.todoapp.DataBase.Model.Todo;
+import com.example.administrator.todoapp.DataBase.TodoDataBase;
 import com.example.administrator.todoapp.R;
 
 import org.w3c.dom.Text;
@@ -59,6 +60,19 @@ public class TodoRecyclerViewAdapter
     }
 
 
+    public void deleteItem(int position) {
+        Todo todo = items.get(position);
+        items.remove(todo);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, items.size());
+
+
+    }
+
+    public void restoreItem(Todo item, int position) {
+        items.add(position, item);
+        notifyItemInserted(position);
+    }
 
 
 

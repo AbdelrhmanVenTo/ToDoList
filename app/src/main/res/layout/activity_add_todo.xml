@@ -8,31 +8,65 @@
     tools:context=".AddTodoActivity">
 
     <EditText
-        android:id="@+id/title"
+        android:id="@+id/titleAdd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/title" />
 
     <EditText
-        android:id="@+id/content"
+        android:id="@+id/contentAdd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="start"
         android:hint="@string/content"
         android:lines="7" />
 
-    <TextView
-        android:id="@+id/date"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="12dp"
-        android:text="date"/>
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/time"/>
+
+        <TextView
+            android:id="@+id/timeAdd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:text="@string/time"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/date"/>
+
+        <TextView
+            android:id="@+id/dateAdd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:text="@string/date"/>
+
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/add"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
         android:background="@color/colorPrimary"
         android:text="@string/add"
         android:textColor="#fff" />

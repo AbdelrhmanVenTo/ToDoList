@@ -10,29 +10,66 @@
 
 
     <EditText
-        android:id="@+id/title"
+        android:id="@+id/titleUpdate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/title" />
 
     <EditText
-        android:id="@+id/content"
+        android:id="@+id/contentUpdate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="start"
         android:hint="@string/content"
         android:lines="7" />
 
-    <EditText
-        android:id="@+id/date"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/date" />
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/time"/>
+
+        <TextView
+            android:id="@+id/timeUpdate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:text="@string/time"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/date"/>
+
+        <TextView
+            android:id="@+id/dateUpdate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:text="@string/date"/>
+
+
+    </LinearLayout>
+
 
     <Button
-        android:id="@+id/add"
+        android:id="@+id/update"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:background="@color/colorPrimary"
         android:text="@string/update"
         android:textColor="#fff" />
