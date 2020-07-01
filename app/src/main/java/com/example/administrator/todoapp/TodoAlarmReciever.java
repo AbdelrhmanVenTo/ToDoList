@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 
 import javax.crypto.Cipher;
@@ -22,7 +23,8 @@ public class TodoAlarmReciever extends BroadcastReceiver {
                =new NotificationCompat.Builder(context,MyApplication.CHANNEL_ID);
        builder.setContentTitle(title)
                .setContentText(content)
-               .setSmallIcon(R.drawable.to_do_icon);
+               .setSmallIcon(R.drawable.ic_to_do_icon)
+                .setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
 
        NotificationManager notificationManager
                = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

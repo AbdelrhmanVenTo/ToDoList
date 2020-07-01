@@ -61,10 +61,9 @@ public class TodoRecyclerViewAdapter
 
 
     public void deleteItem(int position) {
-        Todo todo = items.get(position);
-        items.remove(todo);
+        items.remove(position);
         notifyItemRemoved(position);
-        notifyItemRangeChanged(position, items.size());
+        //notifyItemRangeChanged(position, items.size());
 
 
     }

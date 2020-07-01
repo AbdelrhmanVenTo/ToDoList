@@ -7,6 +7,8 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -29,6 +31,7 @@ public class AddTodoActivity extends BaseActivity implements View.OnClickListene
     protected EditText contentAdd;
     protected TextView timeAdd;
     protected TextView dateAdd;
+    int hour, minutes ,day, mounth, years;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,60 +50,41 @@ public class AddTodoActivity extends BaseActivity implements View.OnClickListene
             String sDate = dateAdd.getText().toString();
             String sTime = timeAdd.getText().toString();
 
-            //todo : Validation
+            if (TextUtils.isEmpty(sTitle)) {
+                titleAdd.setError("Not Valid");
+            }else if (TextUtils.isEmpty(sContent)){
+                contentAdd.setError("Not Valid");
+            }else if (TextUtils.isEmpty(timeAdd.getText().toString())){
+                timeAdd.setError("Not Valid");
+            }else if (TextUtils.isEmpty(dateAdd.getText().toString())){
+                dateAdd.setError("Not Valid");
+            }else {
+                //todo : Validation
 
-            Todo newItem = new Todo(sTitle , sContent , sDate , sTime);
-            TodoDataBase.getInstance(activity)
-                    .todoDao()
-                    .insertTodo(newItem);
-            addAlarmForTodo();
-            showConfirmationMessage(R.string.success
-                    , R.string.todo_added_successfully,
-                    R.string.ok
-                    , new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(@NonNull MaterialDialog dialog,
-                                            @NonNull DialogAction which) {
-                            dialog.dismiss();
-                            finish();
-                        }
-                    }).setCancelable(false);
+                Todo newItem = new Todo(sTitle , sContent , sDate , sTime);
+                TodoDataBase.getInstance(activity)
+                        .todoDao()
+                        .insertTodo(newItem);
+                Log.e("TAG", "onClick: "+newItem.getDate()+"-"+newItem.getTime());
+                addAlarmForTodo();
+                showConfirmationMessage(R.string.success
+                        , R.string.todo_added_successfully,
+                        R.string.ok
+                        , new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog,
+                                                @NonNull DialogAction which) {
+                                dialog.dismiss();
+                                finish();
+                            }
+                        }).setCancelable(false);
+            }
 
         } else if (view.getId() == R.id.timeAdd) {
-            Calendar calendar = Calendar.getInstance();
-            int m = calendar.get(Calendar.MINUTE);
-            int h = calendar.get(Calendar.HOUR_OF_DAY);
-            TimePickerDialog dialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
-                @Override
-                public void onTimeSet(TimePicker view,
-                                      int hours, int minutes) {
-                    hour = hours;
-                    minute = minutes;
-                    timeAdd.setText(hours + ":" + minute);
-                }
-            }, h, m, false);
-            dialog.show();
+          ShowTimePickerDialogStart();
 
         } else if (view.getId() == R.id.dateAdd) {
-            Calendar calendar = Calendar.getInstance();
-            int monthsDatePiker = calendar.get(Calendar.MONTH);
-            int daysDatePiker = calendar.get(Calendar.DAY_OF_MONTH);
-            int yearsDatePiker = calendar.get(Calendar.YEAR);
-
-
-            DatePickerDialog datePickerDialog = new DatePickerDialog(this,
-                    new DatePickerDialog.OnDateSetListener() {
-
-                        @Override
-                        public void onDateSet(DatePicker view, int year,
-                                              int monthOfYear, int dayOfMonth) {
-
-                            dateAdd.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
-
-                        }
-                    }, yearsDatePiker, monthsDatePiker, daysDatePiker);
-            datePickerDialog.show();
-
+            ShowDatePickerDialogStart();
         }
     }
 
@@ -115,20 +99,88 @@ public class AddTodoActivity extends BaseActivity implements View.OnClickListene
 
         AlarmManager alarmManager = (AlarmManager)
                 getSystemService(ALARM_SERVICE);
-
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, hour);
-        calendar.set(Calendar.MINUTE, minute);
+        Log.e("TAG", "addAlarmForTodo: hour"+ hour);
+        calendar.set(Calendar.MINUTE, minutes);
+        Log.e("TAG", "addAlarmForTodo: minute"+ minutes);
         calendar.set(Calendar.MONTH, mounth);
+        Log.e("TAG", "addAlarmForTodo: mounth"+ mounth);
         calendar.set(Calendar.DAY_OF_MONTH, day);
-        calendar.set(Calendar.YEAR, year);
+        Log.e("TAG", "addAlarmForTodo: day"+ day);
+        calendar.set(Calendar.YEAR, years);
+        Log.e("TAG", "addAlarmForTodo: year"+ years);
 
-        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        Log.e("TAG", "addAlarmForTodo:"+ calendar.getTimeInMillis());
+
+
+
+
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),pendingIntent);
 
 
     }
 
-    int hour, minute ,day, mounth, year;
+    private void ShowTimePickerDialogStart() {
+        // Get Current Time
+        Calendar calendar  = Calendar.getInstance();
+        hour = calendar.get(Calendar.HOUR_OF_DAY);
+        minutes = calendar.get(Calendar.MINUTE);
+
+        // Launch Time Picker Dialog
+        TimePickerDialog timePickerDialog = new TimePickerDialog(activity, android.R.style.Theme_Holo_Light_Dialog_NoActionBar,
+                new TimePickerDialog.OnTimeSetListener() {
+
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay,
+                                          int minute) {
+                        if (timeAdd.getText().toString().isEmpty()) {
+                            timeAdd.setError("Not Valid");
+                        } else {
+                            hour = hourOfDay;
+                            minutes = minute;
+                            timeAdd.setText(hourOfDay + ":" + minute);
+                        }
+
+                    }
+                }, hour, minutes, false);
+
+        timePickerDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        timePickerDialog.show();
+    }
+
+
+    private void ShowDatePickerDialogStart() {
+        // Get Current Date
+        Calendar calendar  = Calendar.getInstance();
+        years = calendar.get(Calendar.YEAR);
+        mounth = calendar.get(Calendar.MONTH);
+        day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(activity,
+                new DatePickerDialog.OnDateSetListener() {
+
+                    @Override
+                    public void onDateSet(DatePicker view, int year,
+                                          int monthOfYear, int dayOfMonth) {
+                        if (dateAdd.getText().toString().isEmpty()) {
+                            dateAdd.setError("Not Valid");
+                        } else {
+                            mounth = monthOfYear;
+                            day = dayOfMonth;
+                            years =  year;
+                            dateAdd.setText(dayOfMonth + "-" + (monthOfYear+1) + "-" + year);
+
+                        }
+                    }
+                }, years, mounth, day);
+
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+        datePickerDialog.show();
+
+    }
+
+
 
     private void initView() {
         add = (Button) findViewById(R.id.add);

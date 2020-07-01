@@ -9,6 +9,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -27,6 +28,7 @@ import com.example.administrator.todoapp.Base.BaseActivity;
 import com.example.administrator.todoapp.DataBase.Model.Todo;
 import com.example.administrator.todoapp.DataBase.TodoDataBase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TodoListActivity extends BaseActivity {
@@ -34,7 +36,7 @@ public class TodoListActivity extends BaseActivity {
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     TodoRecyclerViewAdapter adapter;
-
+    ConstraintLayout coordinatorLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,7 @@ public class TodoListActivity extends BaseActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         recyclerView = findViewById(R.id.recycler_view);
+        coordinatorLayout = findViewById(R.id.coordinatorLayout);
         layoutManager= new LinearLayoutManager(activity);
         adapter = new TodoRecyclerViewAdapter(null);
         recyclerView.setLayoutManager(layoutManager);
@@ -75,28 +78,37 @@ public class TodoListActivity extends BaseActivity {
             }
         });
 
-
+        enableSwipeToDeleteAndUndo();
 
 
     }
 
-    private void enableSwipeToDeleteAndUndo() {
-        SwipeToDeleteCallback swipeToDeleteCallback = new SwipeToDeleteCallback(activity) {
 
+    private void enableSwipeToDeleteAndUndo() {
+        SwipeToDeleteCallback swipeToDeleteCallback = new SwipeToDeleteCallback(this) {
             @Override
-            public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder, final int i) {
-                TodoDataBase.getInstance(activity).todoDao().deleteTodo(adapter.getData(viewHolder.getAdapterPosition()));
-                adapter.deleteItem(viewHolder.getAdapterPosition());
-                Toast.makeText(activity,"Todo Deleted",Toast.LENGTH_SHORT).show();
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+
+                final int position = viewHolder.getAdapterPosition();
+                final Todo mTodo = adapter.getData(position);
+
+                adapter.deleteItem(position);
                 Snackbar snackbar = Snackbar
-                        .make(findViewById(android.R.id.content), "Item was removed from the list.", Snackbar.LENGTH_LONG);
+                        .make(coordinatorLayout, "Item was removed from the list.", Snackbar.LENGTH_LONG);
                 snackbar.setAction("UNDO", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Log.e("error" , "insert");
-                         adapter.restoreItem(adapter.getData(viewHolder.getAdapterPosition())
-                                 ,viewHolder.getAdapterPosition()-1);
 
+                        adapter.restoreItem(mTodo, position);
+                        recyclerView.scrollToPosition(position);
+                    }
+                });snackbar.addCallback(new Snackbar.Callback() {
+                    @Override
+                    public void onDismissed(Snackbar transientBottomBar, int event) {
+                        if (event == DISMISS_EVENT_TIMEOUT) {
+                            // TODO delete from the database
+                            TodoDataBase.getInstance(activity).todoDao().deleteTodo(mTodo);
+                        }
                     }
                 });
 
@@ -105,8 +117,6 @@ public class TodoListActivity extends BaseActivity {
 
             }
         };
-
-
 
         ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeToDeleteCallback);
         itemTouchhelper.attachToRecyclerView(recyclerView);

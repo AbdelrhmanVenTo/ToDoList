@@ -7,6 +7,7 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -32,6 +33,9 @@ public class UpdateTodoListActivity extends BaseActivity implements View.OnClick
     protected TextView dateUpdate;
     String sTitle, sContent, sDate, sTime;
     int idUpdate;
+
+    int hour, minutes ,day, mounth, years;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,40 +85,11 @@ public class UpdateTodoListActivity extends BaseActivity implements View.OnClick
                     }).setCancelable(false);
         }
          else if (view.getId() == R.id.timeUpdate) {
-            Calendar calendar = Calendar.getInstance();
-            int m = calendar.get(Calendar.MINUTE);
-            int h = calendar.get(Calendar.HOUR_OF_DAY);
-            TimePickerDialog dialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
-                @Override
-                public void onTimeSet(TimePicker view,
-                                      int hours, int minutes) {
-                    hour = hours;
-                    minute = minutes;
-                    timeUpdate.setText(hours + ":" + minute);
-                }
-            }, h, m, false);
-            dialog.show();
+           ShowTimePickerDialogStart();
 
         } else if (view.getId() == R.id.dateUpdate) {
-            Calendar calendar = Calendar.getInstance();
-            int monthsDatePiker = calendar.get(Calendar.MONTH);
-            int daysDatePiker = calendar.get(Calendar.DAY_OF_MONTH);
-            int yearsDatePiker = calendar.get(Calendar.YEAR);
-
-
-            DatePickerDialog datePickerDialog = new DatePickerDialog(this,
-                    new DatePickerDialog.OnDateSetListener() {
-
-                        @Override
-                        public void onDateSet(DatePicker view, int year,
-                                              int monthOfYear, int dayOfMonth) {
-
-                            dateUpdate.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
-
-                        }
-                    }, yearsDatePiker, monthsDatePiker, daysDatePiker);
-            datePickerDialog.show();
-        }
+            ShowDatePickerDialogStart();
+         }
 
     }
 
@@ -129,21 +104,87 @@ public class UpdateTodoListActivity extends BaseActivity implements View.OnClick
 
         AlarmManager alarmManager = (AlarmManager)
                 getSystemService(ALARM_SERVICE);
-
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, hour);
-        calendar.set(Calendar.MINUTE, minute);
+        Log.e("TAG", "addAlarmForTodo: hour"+ hour);
+        calendar.set(Calendar.MINUTE, minutes);
+        Log.e("TAG", "addAlarmForTodo: minute"+ minutes);
         calendar.set(Calendar.MONTH, mounth);
+        Log.e("TAG", "addAlarmForTodo: mounth"+ mounth);
         calendar.set(Calendar.DAY_OF_MONTH, day);
-        calendar.set(Calendar.YEAR, year);
+        Log.e("TAG", "addAlarmForTodo: day"+ day);
+        calendar.set(Calendar.YEAR, years);
+        Log.e("TAG", "addAlarmForTodo: year"+ years);
 
-        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        Log.e("TAG", "addAlarmForTodo:"+ calendar.getTimeInMillis());
+
+
+
+
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),pendingIntent);
 
 
     }
 
-    int hour, minute, day, mounth, year;
 
+
+    private void ShowDatePickerDialogStart() {
+        // Get Current Date
+        Calendar calendar  = Calendar.getInstance();
+        years = calendar.get(Calendar.YEAR);
+        mounth = calendar.get(Calendar.MONTH);
+        day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(activity,
+                new DatePickerDialog.OnDateSetListener() {
+
+                    @Override
+                    public void onDateSet(DatePicker view, int year,
+                                          int monthOfYear, int dayOfMonth) {
+                        if (dateUpdate.getText().toString().isEmpty()) {
+                            dateUpdate.setError("Not Valid");
+                        } else {
+                            mounth = monthOfYear;
+                            day = dayOfMonth;
+                            years =  year;
+                            dateUpdate.setText(dayOfMonth + "-" + (monthOfYear+1) + "-" + year);
+
+                        }
+                    }
+                }, years, mounth, day);
+
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+        datePickerDialog.show();
+
+    }
+
+    private void ShowTimePickerDialogStart() {
+        // Get Current Time
+        Calendar calendar  = Calendar.getInstance();
+        hour = calendar.get(Calendar.HOUR_OF_DAY);
+        minutes = calendar.get(Calendar.MINUTE);
+
+        // Launch Time Picker Dialog
+        TimePickerDialog timePickerDialog = new TimePickerDialog(activity, android.R.style.Theme_Holo_Light_Dialog_NoActionBar,
+                new TimePickerDialog.OnTimeSetListener() {
+
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay,
+                                          int minute) {
+                        if (timeUpdate.getText().toString().isEmpty()) {
+                            timeUpdate.setError("Not Valid");
+                        } else {
+                            hour = hourOfDay;
+                            minutes = minute;
+                            timeUpdate.setText(hourOfDay + ":" + minute);
+                        }
+
+                    }
+                }, hour, minutes, false);
+
+        timePickerDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        timePickerDialog.show();
+    }
 
     private void initView() {
 
